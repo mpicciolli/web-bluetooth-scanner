@@ -22,12 +22,15 @@
     "@angular/router": "~3.1.0",
     "core-js": "^2.4.1",
     "rxjs": "5.0.0-beta.12",
+    "text-encoding": "^0.6.4",
     "ts-helpers": "^1.1.1",
     "zone.js": "^0.6.23"
   },
   "devDependencies": {
     "@types/jasmine": "^2.2.30",
     "@types/node": "^6.0.42",
+    "@types/text-encoding": "0.0.30",
+    "@types/web-bluetooth": "0.0.1",
     "angular-cli": "1.0.0-beta.19-3",
     "codelyzer": "1.0.0-beta.1",
     "jasmine-core": "2.4.1",
