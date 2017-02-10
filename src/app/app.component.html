@@ -2,6 +2,10 @@
   {{title}}
 </h1>
 
+<button (click)="onScan()">
+  scan
+</button>
+
 <app-characteristic *ngFor='let characteristic of characteristics' [characteristic]="characteristic">
 
 </app-characteristic>
