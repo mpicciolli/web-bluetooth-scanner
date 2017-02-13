@@ -1,15 +1,11 @@
-<h1>
-  {{title}}
-</h1>
+<md-toolbar color="primary">
+  <span>{{title}}</span>
+  <span class="example-spacer"></span>
+  <button (click)="onScan()" md-button>Scan button</button>
+</md-toolbar>
+<h3 md-subheader>Device : {{deviceName}} - Status : {{status}}</h3>
+<md-list>
+  <app-service *ngFor='let service of services' [service]="service">
 
-<button (click)="onScan()">
-  scan
-</button>
-
-<app-characteristic *ngFor='let characteristic of characteristics' [characteristic]="characteristic">
-
-</app-characteristic>
-
-<app-characteristic [characteristic]="'characteristic'">
-
-</app-characteristic>
+  </app-service>
+</md-list>
