@@ -1,7 +1,6 @@
 <md-list-item>
-  <md-icon md-list-avatar>folder</md-icon>
-  <h4 md-line>{{service.uuid}}</h4>
-  <p md-line>{{service}}</p>
+  <h4 md-line>{{serviceName}}</h4>
+  <p md-line *ngIf="service.isPrimary">PRIMARY SERVICE</p>
 </md-list-item>
 <app-characteristic *ngFor='let characteristic of characteristics' [characteristic]="characteristic">
 

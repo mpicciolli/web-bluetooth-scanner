@@ -1,11 +1,16 @@
 <md-toolbar color="primary">
   <span>{{title}}</span>
   <span class="example-spacer"></span>
-  <button (click)="onScan()" md-button>Scan button</button>
+  <button (click)="onScan()" md-button [disabled]="!bluetoothIsEnabled" *ngIf="!isConnected">Scan button</button>
+  <button (click)="disconnect()" md-button *ngIf="isConnected">Disconnect button</button>
 </md-toolbar>
-<h3 md-subheader>Device : {{deviceName}} - Status : {{status}}</h3>
+<h3 md-subheader  *ngIf="isConnected">Device : {{deviceName}} - Status : {{status}}</h3>
 <md-list>
   <app-service *ngFor='let service of services' [service]="service">
 
   </app-service>
 </md-list>
+
+<p *ngIf="!bluetoothIsEnabled">
+  {{errorMessage}}
+</p>

@@ -1,4 +1,5 @@
 import {Component} from '@angular/core'
+import {Service} from "./common/Service";
 
 @Component({
   selector: 'app-root',
@@ -6,153 +7,118 @@ import {Component} from '@angular/core'
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title:string = 'App works!';
-  status:string;
-  deviceName:string;
+  title: string = 'App works!';
+  status: string;
+  deviceName: string;
+  isConnected: boolean;
+  autoReconnection: boolean;
+  bluetoothIsEnabled: boolean;
   services: BluetoothRemoteGATTService[];
-
-  static serviceList:string[] = [
-  "alert_notification",
-  "automation_io",
-  "battery_service",
-  "blood_pressure",
-  "body_composition",
-  "bond_management",
-  "continuous_glucose_monitoring",
-  "current_time",
-  "cycling_power",
-  "cycling_speed_and_cadence",
-  "device_information",
-  "environmental_sensing",
-  "generic_access",
-  "generic_attribute",
-  "glucose",
-  "health_thermometer",
-  "heart_rate",
-  "human_interface_device",
-  "immediate_alert",
-  "indoor_positioning",
-  "internet_protocol_support",
-  "link_loss",
-  "location_and_navigation",
-  "next_dst_change",
-  "phone_alert_status",
-  "pulse_oximeter",
-  "reference_time_update",
-  "running_speed_and_cadence",
-  "scan_parameters",
-  "tx_power",
-  "user_data",
-  "weight_scale"];
+  errorMessage: string;
+  bluetoothDevice: BluetoothDevice;
 
   constructor() {
-  }
-
-  ngOnInit() {
-
+    this.autoReconnection = true;
+    this.isConnected = false;
+    this.bluetoothIsEnabled = this.isWebBluetoothEnabled();
   }
 
   onScan(): void {
     this.status = 'Requesting any Bluetooth Device...';
+    this.autoReconnection = true;
     console.log(this.status);
 
     navigator.bluetooth.requestDevice({
       // filters: [...] <- Prefer filters to save energy & show relevant devices.
       acceptAllDevices: true,
-      optionalServices: AppComponent.serviceList
+      optionalServices: Service.serviceList
     })
       .then(device => {
+        this.bluetoothDevice = device;
         this.deviceName = device.name;
+        this.status = 'Connected';
+        this.isConnected = true;
         console.log('Connecting to GATT Server...');
+        device.addEventListener('gattserverdisconnected', this.onDisconnected);
         return device.gatt.connect();
       })
       .then(server => {
-        this.status = 'Connected';
+
         console.log('Getting GAP Service...');
         return server.getPrimaryServices();
       })
-      // .then(services => {
-      //   console.log('Getting GAP Characteristics...');
-      //   return services.getCharacteristics();
-      // })
       .then(services => {
         console.log('Getting Characteristics...');
         this.services = services;
-
-        // let queue = Promise.resolve();
-        // services.forEach(service => {
-        //   queue = queue.then(_ => service.getCharacteristics().then(characteristics => {
-        //     console.log('> Service: ' + service.uuid);
-        //     characteristics.forEach(characteristic => {
-        //       console.log('>> Characteristic: ' + characteristic.uuid + ' ' +
-        //         this.getSupportedProperties(characteristic));
-        //     });
-        //   }));
-        // });
         return services;
       })
-      // .then(characteristics => {
-      //   let queue = Promise.resolve();
-      //   this.characteristics = characteristics;
-      //   characteristics.forEach(characteristic => {
-      //     // switch (characteristic.uuid) {
-      //     //
-      //     //   case BluetoothUUID.getCharacteristic('gap.appearance'):
-      //     //     queue = queue.then(_ => readAppearanceValue(characteristic));
-      //     //     break;
-      //     //
-      //     //   case BluetoothUUID.getCharacteristic('gap.device_name'):
-      //     //     queue = queue.then(_ => readDeviceNameValue(characteristic));
-      //     //     break;
-      //     //
-      //     //   case BluetoothUUID.getCharacteristic('gap.peripheral_preferred_connection_parameters'):
-      //     //     queue = queue.then(_ => readPPCPValue(characteristic));
-      //     //     break;
-      //     //
-      //     //   case BluetoothUUID.getCharacteristic('gap.central_address_resolution_support'):
-      //     //     queue = queue.then(_ => readCentralAddressResolutionSupportValue(characteristic));
-      //     //     break;
-      //     //
-      //     //   case BluetoothUUID.getCharacteristic('gap.peripheral_privacy_flag'):
-      //     //     queue = queue.then(_ => readPeripheralPrivacyFlagValue(characteristic));
-      //     //     break;
-      //     //
-      //     //   default: console.log('> Unknown Characteristic: ' + characteristic.uuid);
-      //     // }
-      //   });
-      //   return queue;
-      // })
       .catch(error => {
+        this.isConnected = false;
+        this.errorMessage = error;
         console.log('Argh! ' + error);
       });
   }
 
-  /* Utils */
-
-  getSupportedProperties(characteristic) {
-    let supportedProperties = [];
-    for (const p in characteristic.properties) {
-      if (characteristic.properties[p] === true) {
-        supportedProperties.push(p.toUpperCase());
-      }
+  disconnect() {
+    if (!this.bluetoothDevice) {
+      return;
     }
-    return '[' + supportedProperties.join(', ') + ']';
+    console.log('Disconnecting from Bluetooth Device...');
+    this.autoReconnection = false;
+    if (this.bluetoothDevice.gatt.connected) {
+      this.bluetoothDevice.gatt.disconnect();
+    } else {
+      console.log('> Bluetooth Device is already disconnected');
+    }
   }
 
-  padHex(value): string {
-    return ('00' + value.toString(16).toUpperCase()).slice(-2);
+  private onDisconnected() {
+    console.log('> Bluetooth Device disconnected');
+    this.isConnected = false;
+    if (this.autoReconnection)
+      this.connect();
   }
 
-  // getUsbVendorName(value): string {
-  //   // Check out page source to see what valueToUsbVendorName object is.
-  //   return value + (value in valueToUsbVendorName ? ' (' + valueToUsbVendorName[value] + ')' : '');
-  // }
+  private connect() {
+    this.exponentialBackoff(3 /* max retries */, 2 /* seconds delay */,
+      function toTry() {
+        this.time('Connecting to Bluetooth Device... ');
+        return this.bluetoothDevice.gatt.connect();
+      },
+      function success() {
+        console.log('> Bluetooth Device connected. Try disconnect it now.');
+        this.isConnected = true;
+      },
+      function fail() {
+        this.time('Failed to reconnect.');
+      });
+  }
 
-  anyNamedDevice(): Array<BluetoothRequestDeviceFilter> {
-    // This is the closest we can get for now to get all devices.
-    // https://github.com/WebBluetoothCG/web-bluetooth/issues/234
-    return Array.from('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
-      .map(c => ({namePrefix: c}));
+  private exponentialBackoff(max, delay, toTry, success, fail) {
+    toTry().then(result => success(result))
+      .catch(_ => {
+        if (max === 0) {
+          return fail();
+        }
+        this.time('Retrying in ' + delay + 's... (' + max + ' tries left)');
+        setTimeout(function () {
+          this.exponentialBackoff(--max, delay * 2, toTry, success, fail);
+        }, delay * 1000);
+      });
+  }
+
+  private time(text) {
+    console.log('[' + new Date().toJSON().substr(11, 8) + '] ' + text);
+  }
+
+  private isWebBluetoothEnabled() {
+    if (navigator.bluetooth) {
+      return true;
+    } else {
+      this.errorMessage = 'Web Bluetooth API is not available.\n' +
+        'Please make sure the "Experimental Web Platform features" flag is enabled.';
+      return false;
+    }
   }
 }
 
