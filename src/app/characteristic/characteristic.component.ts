@@ -1,6 +1,6 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {DeviceType} from "../common/DeviceType";
-import {Vendor} from "../common/Vendor";
+import {Vendors} from "../common/Vendors";
 
 @Component({
   selector: 'app-characteristic',
@@ -167,7 +167,7 @@ export class CharacteristicComponent implements OnInit {
   private getDeviceType(value) {
     // Check out page source to see what valueToDeviceType object is.
     return value +
-      (value in DeviceType.deviceTypeList ? ' (' + DeviceType.deviceTypeList[value] + ')' : '');
+      (value in DeviceType ? ' (' + DeviceType[value] + ')' : '');
   }
 
   private padHex(value) {
@@ -177,6 +177,6 @@ export class CharacteristicComponent implements OnInit {
   private getUsbVendorName(value) {
     // Check out page source to see what valueToUsbVendorName object is.
     return value +
-      (value in Vendor.vendorList ? ' (' + Vendor.vendorList[value] + ')' : '');
+      (value in Vendors ? ' (' + Vendors[value] + ')' : '');
   }
 }

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core'
-import {Service} from "./common/Service";
+import {Services} from "./common/Services";
 
 @Component({
   selector: 'app-root',
@@ -31,7 +31,7 @@ export class AppComponent {
     navigator.bluetooth.requestDevice({
       // filters: [...] <- Prefer filters to save energy & show relevant devices.
       acceptAllDevices: true,
-      optionalServices: Service.serviceList
+      optionalServices: Services
     })
       .then(device => {
         this.bluetoothDevice = device;
