@@ -1,4 +1,19 @@
-Characteristic {{characteristic.uuid}}<br>
+<md-list-item>
+  <md-icon md-list-avatar>person</md-icon>
+  <h3 md-line> {{characteristicName}} </h3>
+  <h4 md-line> {{characteristic.uuid}} </h4>
+  <p md-line>Lorem ... </p>
+  <p md-line class="md-caption">Value : </p>
+  <span flex></span>
+  <!--<span>-->
+    <!--<button md-icon-button [md-menu-trigger-for]="menu">-->
+      <!--<md-icon>more_vert</md-icon>-->
+    <!--</button>-->
+    <!--<md-menu x-position="before" #menu="mdMenu">-->
+      <!--<button md-menu-item>Delete</button>-->
+    <!--</md-menu>-->
+  <!--</span>-->
+</md-list-item>
 <!--authenticatedSignedWrites: {{characteristic.properties.authenticatedSignedWrites}}<br>-->
 <!--broadcast : {{characteristic.properties.broadcast}}<br>-->
 <!--indicate : {{characteristic.properties.indicate}}<br>-->

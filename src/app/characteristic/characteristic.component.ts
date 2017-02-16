@@ -9,60 +9,64 @@ import {Vendors} from "../common/Vendors";
 })
 export class CharacteristicComponent implements OnInit {
   @Input() characteristic: BluetoothRemoteGATTCharacteristic;
+  characteristicName:string;
 
   constructor() {
   }
 
   ngOnInit() {
     console.log('>> Characteristic: ' + this.characteristic.uuid + ' ' + this.getSupportedProperties(this.characteristic));
+    this.characteristicName = this.getName(this.characteristic.uuid);
+  }
 
+  private getName(uuid:string):string{
     let decoder = new TextDecoder('utf-8');
     let queue = Promise.resolve();
 
-    switch (this.characteristic.uuid) {
+    switch (uuid) {
       case BluetoothUUID.getCharacteristic('gap.appearance'):
         console.log(this.readAppearanceValue(this.characteristic));
-        break;
+        return 'Appearance';
       case BluetoothUUID.getCharacteristic('gap.device_name'):
         console.log(this.readDeviceNameValue(this.characteristic));
-        break;
+        return 'Device Name';
       case BluetoothUUID.getCharacteristic('gap.peripheral_preferred_connection_parameters'):
         console.log(this.readPPCPValue(this.characteristic));
-        break;
+        return 'Peripheral Preferred Connection Parameters';
       case BluetoothUUID.getCharacteristic('gap.central_address_resolution_support'):
         console.log(this.readCentralAddressResolutionSupportValue(this.characteristic));
-        break;
+        return 'Central Address Resolution';
       case BluetoothUUID.getCharacteristic('gap.peripheral_privacy_flag'):
         console.log(this.readPeripheralPrivacyFlagValue(this.characteristic));
-        break;
+        return 'Peripheral Privacy Flag';
 
       //Device-information-characteristics
       case BluetoothUUID.getCharacteristic('manufacturer_name_string'):
         queue = queue.then(_ => this.characteristic.readValue()).then(value => {
           console.log('> Manufacturer Name String: ' + decoder.decode(value));
         });
-        break;
+        return 'Manufacturer Name String';
       case BluetoothUUID.getCharacteristic('model_number_string'):
         queue = queue.then(_ => this.characteristic.readValue()).then(value => {
           console.log('> Model Number String: ' + decoder.decode(value));
         });
-        break;
+        return 'Model Number String';
 
       case BluetoothUUID.getCharacteristic('hardware_revision_string'):
         queue = queue.then(_ => this.characteristic.readValue()).then(value => {
           console.log('> Hardware Revision String: ' + decoder.decode(value));
         });
-        break;
+        return 'Hardware Revision String';
       case BluetoothUUID.getCharacteristic('firmware_revision_string'):
         queue = queue.then(_ => this.characteristic.readValue()).then(value => {
           console.log('> Firmware Revision String: ' + decoder.decode(value));
         });
-        break;
+        return 'Firmware Revision String';
       case BluetoothUUID.getCharacteristic('software_revision_string'):
         queue = queue.then(_ => this.characteristic.readValue()).then(value => {
           console.log('> Software Revision String: ' + decoder.decode(value));
         });
-        break;
+        return 'Software Revision String';
       case BluetoothUUID.getCharacteristic('system_id'):
         queue = queue.then(_ => this.characteristic.readValue()).then(value => {
           console.log('> System ID: ');
@@ -74,13 +78,13 @@ export class CharacteristicComponent implements OnInit {
             this.padHex(value.getUint8(7)) + this.padHex(value.getUint8(6)) +
             this.padHex(value.getUint8(5)));
         });
-        break;
+        return 'System ID';
       case BluetoothUUID.getCharacteristic('ieee_11073-20601_regulatory_certification_data_list'):
         queue = queue.then(_ => this.characteristic.readValue()).then(value => {
           console.log('> IEEE 11073-20601 Regulatory Certification Data List: ' +
             decoder.decode(value));
         });
-        break;
+        return 'IEEE 11073-20601 Regulatory Certification Data List';
       case BluetoothUUID.getCharacteristic('pnp_id'):
         queue = queue.then(_ => this.characteristic.readValue()).then(value => {
           console.log('> PnP ID:');
@@ -97,9 +101,10 @@ export class CharacteristicComponent implements OnInit {
           console.log('  > Product Version: ' +
             (value.getUint8(5) | value.getUint8(6) << 8));
         });
-        break;
+        return 'PnP ID';
       default:
         console.log('> Unknown Characteristic: ' + this.characteristic.uuid);
+        return 'Unknown Characteristic'
     }
   }
 

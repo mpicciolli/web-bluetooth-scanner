@@ -7,9 +7,8 @@ import {Services} from "./common/Services";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title: string = 'App works!';
+  title: string = 'Web Bluetooth scanner';
   status: string;
-  deviceName: string;
   isConnected: boolean;
   autoReconnection: boolean;
   bluetoothIsEnabled: boolean;
@@ -35,7 +34,6 @@ export class AppComponent {
     })
       .then(device => {
         this.bluetoothDevice = device;
-        this.deviceName = device.name;
         this.status = 'Connected';
         this.isConnected = true;
         console.log('Connecting to GATT Server...');

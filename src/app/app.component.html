@@ -1,16 +1,33 @@
-<md-toolbar color="primary">
+<md-toolbar color="accent">
   <span>{{title}}</span>
-  <span class="example-spacer"></span>
-  <button (click)="onScan()" md-button [disabled]="!bluetoothIsEnabled" *ngIf="!isConnected">Scan button</button>
-  <button (click)="disconnect()" md-button *ngIf="isConnected">Disconnect button</button>
+  <span flex></span>
+  <button md-icon-button (click)="onScan()" [disabled]="!bluetoothIsEnabled" *ngIf="!isConnected">
+    <md-icon>search</md-icon>
+  </button>
+  <button md-icon-button (click)="disconnect()" md-button *ngIf="isConnected">
+    <md-icon>bluetooth_disabled</md-icon>
+  </button>
 </md-toolbar>
-<h3 md-subheader  *ngIf="isConnected">Device : {{deviceName}} - Status : {{status}}</h3>
-<md-list>
-  <app-service *ngFor='let service of services' [service]="service">
 
-  </app-service>
-</md-list>
+<!--Service list-->
+<md-card *ngIf="isConnected">
+  <md-card-title>{{bluetoothDevice.name}}</md-card-title>
+  <md-card-subtitle>{{status}}</md-card-subtitle>
+  <md-card-subtitle>ID : {{bluetoothDevice.id}}</md-card-subtitle>
+  <md-divider></md-divider>
+  <md-card-content>
+    <app-service *ngFor='let service of services' [service]="service">
 
-<p *ngIf="!bluetoothIsEnabled">
-  {{errorMessage}}
-</p>
+    </app-service>
+  </md-card-content>
+</md-card>
+
+
+<!--Error card-->
+<md-card *ngIf="!bluetoothIsEnabled">
+  <md-card-title>Error</md-card-title>
+  <md-divider></md-divider>
+  <md-card-content>
+    <p>{{errorMessage}}</p>
+  </md-card-content>
+</md-card>

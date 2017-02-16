@@ -1,8 +1,10 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
-import { MaterialModule } from '@angular/material';
+import { NgModule, Type } from '@angular/core';
+import { BrowserModule, Title }  from '@angular/platform-browser';
+
+import { CovalentCoreModule } from '@covalent/core';
+import { CovalentHighlightModule } from '@covalent/highlight';
+import { CovalentMarkdownModule } from '@covalent/markdown';
+import { CovalentChartsModule } from '@covalent/charts';
 
 import { AppComponent } from './app.component';
 import { CharacteristicComponent } from './characteristic/characteristic.component';
@@ -16,9 +18,10 @@ import { ServiceComponent } from './service/service.component';
   ],
   imports: [
     BrowserModule,
-    FormsModule,
-    HttpModule,
-    MaterialModule.forRoot()
+    CovalentCoreModule.forRoot(),
+    CovalentChartsModule.forRoot(),
+    CovalentHighlightModule.forRoot(),
+    CovalentMarkdownModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]

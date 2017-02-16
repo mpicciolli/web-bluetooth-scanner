@@ -9,16 +9,26 @@ export class ServiceComponent implements OnInit {
   @Input() service: BluetoothRemoteGATTService;
   serviceName: string;
   characteristics: BluetoothRemoteGATTCharacteristic[];
+  expanded:boolean;
 
   constructor() {
   }
 
   ngOnInit() {
     console.log('> Service: ' + this.service.uuid);
+    this.expanded = false;
     this.serviceName = this.getName(this.service.uuid);
     this.service.getCharacteristics().then(characteristics => {
       this.characteristics = characteristics;
     });
+  }
+
+  expandedEvent(): void {
+    this.expanded = true;
+  }
+
+  collapsedEvent(): void {
+    this.expanded = false;
   }
 
   private getName(uuid: string): string {
