@@ -2,25 +2,16 @@
 
 # compiled output
 /dist
+/deploy
 /tmp
 
 # dependencies
 /node_modules
+/bower_components
 
 # IDEs and editors
 /.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+/.vscode
 
 # misc
 /.sass-cache
@@ -30,6 +21,7 @@
 npm-debug.log
 testem.log
 /typings
+/.vagrant
 
 # e2e
 /e2e/*.js
@@ -37,4 +29,4 @@ testem.log
 
 #System Files
 .DS_Store
-Thumbs.db
+/LICENSE
