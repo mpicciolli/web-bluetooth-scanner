@@ -37,7 +37,7 @@ export class AppComponent {
         this.status = 'Connected';
         this.isConnected = true;
         console.log('Connecting to GATT Server...');
-        device.addEventListener('gattserverdisconnected', this.onDisconnected);
+        device.addEventListener('gattserverdisconnected', this.onDisconnected); //USE RXJS
         return device.gatt.connect();
       })
       .then(server => {
