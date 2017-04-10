@@ -213,21 +213,21 @@ export class CharacteristicComponent implements OnInit {
       (value in Vendors ? ' (' + Vendors[value] + ')' : '');
   }
 
-  private getBodySensorLocation() {
-    return this._readCharacteristicValue('body_sensor_location')
-      .then(data => {
-        let sensorLocation = data.getUint8(0);
-        switch (sensorLocation) {
-          case 0: return 'Other';
-          case 1: return 'Chest';
-          case 2: return 'Wrist';
-          case 3: return 'Finger';
-          case 4: return 'Hand';
-          case 5: return 'Ear Lobe';
-          case 6: return 'Foot';
-          default: return 'Unknown';
-        }
-      });
-  }
+  // private getBodySensorLocation() {
+  //   return this._readCharacteristicValue('body_sensor_location')
+  //     .then(data => {
+  //       let sensorLocation = data.getUint8(0);
+  //       switch (sensorLocation) {
+  //         case 0: return 'Other';
+  //         case 1: return 'Chest';
+  //         case 2: return 'Wrist';
+  //         case 3: return 'Finger';
+  //         case 4: return 'Hand';
+  //         case 5: return 'Ear Lobe';
+  //         case 6: return 'Foot';
+  //         default: return 'Unknown';
+  //       }
+  //     });
+  // }
 
 }
