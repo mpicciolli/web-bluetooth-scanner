@@ -10,13 +10,14 @@ import {CharacteristicService} from "../../services/characteristic.service";
 })
 export class CharacteristicComponent implements OnInit {
   @Input() characteristic: BluetoothRemoteGATTCharacteristic;
+  supportedProperties: string;
   characteristicName: string;
   characteristicValue: string;
   readable: boolean;
   notifiable: boolean;
   isNotified: boolean;
-  newValue$: Observable<any> = Observable.fromEvent(this.characteristic, 'characteristicvaluechanged');
-  notification$: Subscription;
+  newValue$: Observable<any>;
+  notification: Subscription;
 
   constructor(private _characteristicService: CharacteristicService) {
   }
@@ -26,7 +27,9 @@ export class CharacteristicComponent implements OnInit {
     this.readable = this.characteristic.properties.read;
     this.notifiable = this.characteristic.properties.notify;
     this.isNotified = false;
-    console.log('>> Characteristic: ' + this.characteristicName + ' ' + this.getSupportedProperties());
+    this.supportedProperties = this.getSupportedProperties();
+    console.log('>> Characteristic: ' + this.characteristicName + ' ' + this.supportedProperties);
+
   }
 
   read(): void {
@@ -40,25 +43,41 @@ export class CharacteristicComponent implements OnInit {
   }
 
   notify() {
-    if(this.isNotified){
-      this.unNotify();
+    if (this.isNotified) {
+      // this.unNotify();
+      this.characteristic.stopNotifications()
+        .then(_ => {
+          console.log('> Notifications stopped: ' + this.characteristicName);
+          this.unNotify();
+        })
+        .catch(err => console.log(`Error :  ${err}`));
     }
-    else{
-      this.notification$ = this.newValue$.map(ev => ev.target.value).subscribe(
-        res => this.handleCharacteristicValueChanged,
-        err => console.log(`Error :  ${err}`));
+    else {
+      this.characteristic.startNotifications().then(_ => {
+        console.log('> Notifications started: ' + this.characteristicName);
+        this.isNotified = true;
+        this.newValue$ = Observable.fromEvent(this.characteristic, 'characteristicvaluechanged');
+        this.notification = this.newValue$.subscribe(
+          ev => this.handleCharacteristicValueChanged(ev.target.value),//this.handleCharacteristicValueChanged,
+          err => console.log(`Error :  ${err}`));
+      });
     }
   }
 
-  private handleCharacteristicValueChanged(value: any) {
+  private handleCharacteristicValueChanged(value: DataView) {
     console.log('Received ' + value);
     // TODO: Parse Heart Rate Measurement value.
-    // See https://github.com/WebBluetoothCG/demos/blob/gh-pages/heart-rate-sensor/heartRateSensor.js
     this.characteristicValue = this._characteristicService.read(this.characteristic, value);
   }
 
+  handleNotifications(event) {
+    let value = event.target.value;
+    console.log(value);
+  }
+
   unNotify() {
-    this.notification$.unsubscribe();
+    this.isNotified = false;
+    this.notification.unsubscribe();
   }
 
   private getSupportedProperties(): string {

@@ -476,6 +476,17 @@ export class CharacteristicService {
         return value.getUint8(0).toString();
       case BluetoothUUID.getCharacteristic('body_sensor_location'):
         return this.getSensorLocation(value.getInt8(0));
+      // See https://github.com/WebBluetoothCG/demos/blob/gh-pages/heart-rate-sensor/heartRateSensor.js
+      case BluetoothUUID.getCharacteristic('heart_rate_measurement'):
+        // In Chrome 50+, a DataView is returned instead of an ArrayBuffer.
+        let flags = value.getUint8(0);
+        let rate16Bits = flags & 0x1;
+        let index = 1;
+        if (rate16Bits) {
+          return value.getUint16(index, /*littleEndian=*/true).toString();
+        } else {
+          return value.getUint8(index).toString();
+        }
       default:
         console.log('Value: ' + decoder.decode(value));
         return decoder.decode(value);

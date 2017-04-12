@@ -1,33 +1,32 @@
-<md-toolbar color="accent">
-  <span>{{title}}</span>
-  <span flex></span>
-  <button md-icon-button (click)="onScan()" [disabled]="!bluetoothIsEnabled" *ngIf="!isConnected">
-    <md-icon>search</md-icon>
-  </button>
-  <button md-icon-button (click)="disconnect()" md-button *ngIf="isConnected">
-    <md-icon>bluetooth_disabled</md-icon>
-  </button>
-</md-toolbar>
-
-<!--Service list-->
-<md-card *ngIf="isConnected">
-  <md-card-title>{{bluetoothDevice.name}}</md-card-title>
-  <md-card-subtitle>{{status}}</md-card-subtitle>
-  <md-card-subtitle>ID : {{bluetoothDevice.id}}</md-card-subtitle>
-  <md-divider></md-divider>
-  <md-card-content>
+<td-layout-nav>
+  <div td-toolbar-content layout="row" color="accent" layout-align="center center" flex>
+    <span>{{title}}</span>
+    <span flex></span>
+    <button md-icon-button mdTooltip="Scan" (click)="onScan()" [disabled]="!bluetoothIsEnabled" *ngIf="!isConnected">
+      <md-icon>search</md-icon>
+    </button>
+    <button md-icon-button mdTooltip="Disconnect" (click)="disconnect()" md-button *ngIf="isConnected">
+      <md-icon>bluetooth_disabled</md-icon>
+    </button>
+    <a md-icon-button mdTooltip="Github" href="https://github.com/teradata/covalent" target="_blank">
+      <md-icon svgIcon="assets:github"></md-icon>
+    </a>
+  </div>
+  <md-card *ngIf="isConnected">
+    <md-card-title>{{bluetoothDevice.name}}</md-card-title>
+    <md-card-subtitle>{{status}}</md-card-subtitle>
+    <md-card-subtitle>ID : {{bluetoothDevice.id}}</md-card-subtitle>
+    <md-divider></md-divider>
     <app-service *ngFor='let service of services' [service]="service">
 
     </app-service>
-  </md-card-content>
-</md-card>
-
-
-<!--Error card-->
-<md-card *ngIf="!bluetoothIsEnabled">
-  <md-card-title>Error</md-card-title>
-  <md-divider></md-divider>
-  <md-card-content>
-    <p>{{errorMessage}}</p>
-  </md-card-content>
-</md-card>
+  </md-card>
+  <!--Error card-->
+  <md-card *ngIf="!bluetoothIsEnabled">
+    <md-card-title>Error</md-card-title>
+    <md-divider></md-divider>
+    <md-card-content>
+      <p>{{errorMessage}}</p>
+    </md-card-content>
+  </md-card>
+</td-layout-nav>
