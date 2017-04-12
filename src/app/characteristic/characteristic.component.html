@@ -1,10 +1,16 @@
 <md-list-item>
-  <md-icon md-list-avatar>person</md-icon>
+  <!--<md-icon md-list-avatar>person</md-icon>-->
   <h3 md-line> {{characteristicName}} </h3>
   <h4 md-line> {{characteristic.uuid}} </h4>
   <p md-line>Lorem ... </p>
-  <p md-line class="md-caption">Value : </p>
+  <p md-line class="md-caption">Value : {{characteristicValue}}</p>
   <span flex></span>
+  <button md-mini-fab color="accent" (click)="read()" *ngIf="readable">
+    R
+  </button>
+  <button md-mini-fab color="accent" (click)="notify()" *ngIf="notifiable">
+    N
+  </button>
   <!--<span>-->
     <!--<button md-icon-button [md-menu-trigger-for]="menu">-->
       <!--<md-icon>more_vert</md-icon>-->

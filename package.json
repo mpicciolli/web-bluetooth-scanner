@@ -69,7 +69,6 @@
     "@types/selenium-webdriver": "2.53.36",
     "@types/text-encoding": "0.0.30",
     "@types/web-bluetooth": "0.0.1",
-    "angular-cli": "1.0.0-beta.26",
     "codelyzer": "2.0.0-beta.4",
     "ember-cli-inject-live-reload": "1.4.0",
     "jasmine-core": "2.4.1",
