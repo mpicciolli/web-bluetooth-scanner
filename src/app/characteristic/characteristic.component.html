@@ -8,12 +8,15 @@
   <span flex></span>
   <!--<span class="md-caption text-right" flex="20"> test </span>-->
 </md-list-item>
-<div layout="row" style="margin-left:16px;">
+<div layout="row" style="margin-left:16px;" layout-align="space-around center">
   <button md-mini-fab color="accent" (click)="read()" *ngIf="readable">
     R
   </button>
   <button md-mini-fab color="{{isNotified ? 'primary' : 'accent'}}" (click)="notify()" *ngIf="notifiable">
     N
+  </button>
+  <button md-mini-fab color="accent" (click)="write()" *ngIf="writable">
+    W
   </button>
 </div>
 <!--<ng-template let-item let-last="last" ngFor [ngForOf]="items">-->

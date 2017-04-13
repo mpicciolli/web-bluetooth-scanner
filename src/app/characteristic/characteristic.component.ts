@@ -1,6 +1,7 @@
 import {Component, OnInit, Input} from "@angular/core";
 import {Observable, Subscription} from "rxjs";
 import {CharacteristicService} from "../../services/characteristic.service";
+import {TdDialogService} from "@covalent/core";
 
 @Component({
   selector: 'app-characteristic',
@@ -15,55 +16,69 @@ export class CharacteristicComponent implements OnInit {
   characteristicValue: string;
   readable: boolean;
   notifiable: boolean;
+  writable: boolean;
   isNotified: boolean;
   newValue$: Observable<any>;
   notification: Subscription;
 
-  constructor(private _characteristicService: CharacteristicService) {
+  constructor(private _characteristicService: CharacteristicService, private _dialogService: TdDialogService) {
   }
 
   ngOnInit(): void {
     this.characteristicName = this._characteristicService.getName(this.characteristic.uuid);
     this.readable = this.characteristic.properties.read;
     this.notifiable = this.characteristic.properties.notify;
+    this.writable = this.characteristic.properties.write;
     this.isNotified = false;
     this.supportedProperties = this.getSupportedProperties();
     console.log('>> Characteristic: ' + this.characteristicName + ' ' + this.supportedProperties);
-
   }
 
-  read(): void {
-    //noinspection TypeScriptUnresolvedFunction
-    this.characteristic.readValue().then(value => {
-      this.characteristicValue = this._characteristicService.read(this.characteristic, value);
+  async read(){
+    const value = await this.characteristic.readValue();
+    this.characteristicValue = this._characteristicService.read(this.characteristic, value);
+  }
+
+  async write() {
+    const value = await this.characteristic.readValue();
+    let readValue = this._characteristicService.read(this.characteristic, value);
+
+    this._dialogService.openPrompt({
+      title: 'Value',
+      message: '',
+      value: readValue,
+      cancelButton: 'Cancel',
+      acceptButton: 'Ok',
+    }).afterClosed().subscribe(async(newValue: string) => {
+      if (newValue)
+        await this.characteristic.writeValue(this._characteristicService.write(this.characteristic, newValue));
     });
   }
 
-  write() {
-
-  }
-
-  notify() {
+  async notify() {
     if (this.isNotified) {
-      // this.unNotify();
-      //noinspection TypeScriptUnresolvedFunction
-      this.characteristic.stopNotifications()
-        .then(_ => {
-          console.log('> Notifications stopped: ' + this.characteristicName);
-          this.unNotify();
-        })
-        .catch(err => console.log(`Error :  ${err}`));
+      try {
+        await this.characteristic.stopNotifications();
+        console.log('> Notifications stopped: ' + this.characteristicName);
+        this.unNotify();
+      }
+      catch (err) {
+        console.log(`Error :  ${err}`);
+      }
     }
     else {
-      //noinspection TypeScriptUnresolvedFunction
-      this.characteristic.startNotifications().then(_ => {
+      try {
+        this.characteristic.startNotifications();
         console.log('> Notifications started: ' + this.characteristicName);
         this.isNotified = true;
         this.newValue$ = Observable.fromEvent(this.characteristic, 'characteristicvaluechanged');
         this.notification = this.newValue$.subscribe(
           ev => this.handleCharacteristicValueChanged(ev.target.value),//this.handleCharacteristicValueChanged,
           err => console.log(`Error :  ${err}`));
-      });
+      }
+      catch (err) {
+        console.log(`Error :  ${err}`);
+      }
     }
   }
 
@@ -72,7 +87,6 @@ export class CharacteristicComponent implements OnInit {
     // TODO: Parse Heart Rate Measurement value.
     this.characteristicValue = this._characteristicService.read(this.characteristic, value);
   }
-
 
   private unNotify() {
     this.isNotified = false;

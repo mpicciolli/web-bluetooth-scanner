@@ -2,6 +2,9 @@ import {Injectable} from '@angular/core';
 import {SensorLocation} from "../app/common/SensorLocation";
 import {DeviceType} from "../app/common/DeviceType";
 import {Vendors} from "../app/common/Vendors";
+import * as TextEncoding from 'text-encoding'
+import TextEncoder = TextEncoding.TextEncoder;
+import TextDecoder = TextEncoding.TextDecoder;
 
 @Injectable()
 export class CharacteristicService {
@@ -411,8 +414,13 @@ export class CharacteristicService {
     }
   }
 
+  write(characteristic: BluetoothRemoteGATTCharacteristic, value: string){
+    let encoder:TextEncoder = new TextEncoder('utf-8');
+    return encoder.encode(value);
+  }
+
   read(characteristic: BluetoothRemoteGATTCharacteristic, value: DataView): string {
-    let decoder = new TextDecoder('utf-8');
+    let decoder:TextDecoder = new TextDecoder('utf-8');
     switch (characteristic.uuid) {
       case BluetoothUUID.getCharacteristic('gap.appearance'):
         return this.getDeviceType(value.getUint16(0, true /* Little Endian */));

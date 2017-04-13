@@ -27,7 +27,7 @@
   </md-card>
 
   <!--Error card-->
-  <md-card *ngIf="!bluetoothIsEnabled">
+  <md-card *ngIf="errorMessage">
     <md-card-title>Error</md-card-title>
     <md-divider></md-divider>
     <md-card-content>

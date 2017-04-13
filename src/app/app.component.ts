@@ -137,7 +137,8 @@ export class AppComponent {
       return true;
     } else {
       this.errorMessage = 'Web Bluetooth API is not available.\n' +
-        'Please make sure the "Experimental Web Platform features" flag is enabled.';
+        'Please make sure the "Experimental Web Platform features" flag is enabled.\n' +
+        'Available in Chrome 55+. Mac and Android versions only. Not supported on Windows.';
       return false;
     }
   }
