@@ -1,10 +1,13 @@
 import {Component} from '@angular/core'
 import {Services} from "./common/Services";
+import {TdLoadingService} from "@covalent/core";
+import {DomSanitizer} from "@angular/platform-browser";
+import {MdIconRegistry} from "@angular/material";
 
 @Component({
-  selector: 'app-root',
+  selector: 'qs-app',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title: string = 'Web Bluetooth scanner';
@@ -16,7 +19,25 @@ export class AppComponent {
   errorMessage: string;
   bluetoothDevice: BluetoothDevice;
 
-  constructor() {
+  constructor(private _iconRegistry: MdIconRegistry,
+              private _domSanitizer: DomSanitizer,
+              private _loadingService: TdLoadingService) {
+    this._iconRegistry.addSvgIconInNamespace('assets', 'teradata',
+      this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/teradata.svg'));
+    this._iconRegistry.addSvgIconInNamespace('assets', 'github',
+      this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/github.svg'));
+    this._iconRegistry.addSvgIconInNamespace('assets', 'covalent',
+      this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/covalent.svg'));
+    this._iconRegistry.addSvgIconInNamespace('assets', 'covalent-mark',
+      this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/covalent-mark.svg'));
+    this._iconRegistry.addSvgIconInNamespace('assets', 'teradata-ux',
+      this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/teradata-ux.svg'));
+    this._iconRegistry.addSvgIconInNamespace('assets', 'appcenter',
+      this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/appcenter.svg'));
+    this._iconRegistry.addSvgIconInNamespace('assets', 'listener',
+      this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/listener.svg'));
+    this._iconRegistry.addSvgIconInNamespace('assets', 'querygrid',
+      this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/querygrid.svg'));
     this.autoReconnection = true;
     this.isConnected = false;
     this.bluetoothIsEnabled = this.isWebBluetoothEnabled();
@@ -27,12 +48,13 @@ export class AppComponent {
     this.autoReconnection = true;
     console.log(this.status);
 
+    //noinspection TypeScriptUnresolvedFunction
     navigator.bluetooth.requestDevice({
       // filters: [...] <- Prefer filters to save energy & show relevant devices.
       acceptAllDevices: true,
       optionalServices: Services
-    })
-      .then(device => {
+    }).then(device => {
+        this._loadingService.register('services.list');
         this.bluetoothDevice = device;
         this.status = 'Connected';
         this.isConnected = true;
@@ -41,16 +63,17 @@ export class AppComponent {
         return device.gatt.connect();
       })
       .then(server => {
-
         console.log('Getting GAP Service...');
         return server.getPrimaryServices();
       })
       .then(services => {
+        this._loadingService.resolve('services.list');
         console.log('Getting Characteristics...');
         this.services = services;
         return services;
       })
       .catch(error => {
+        this._loadingService.resolve('services.list');
         this.isConnected = false;
         this.errorMessage = error;
         console.log('Argh! ' + error);

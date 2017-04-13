@@ -1,4 +1,5 @@
 import {Component, OnInit, Input} from '@angular/core';
+import {TdLoadingService} from "@covalent/core";
 
 @Component({
   selector: 'app-service',
@@ -11,7 +12,7 @@ export class ServiceComponent implements OnInit {
   characteristics: BluetoothRemoteGATTCharacteristic[];
   expanded:boolean;
 
-  constructor() {
+  constructor(private _loadingService: TdLoadingService) {
   }
 
   ngOnInit() {

@@ -8,7 +8,7 @@
     <button md-icon-button mdTooltip="Disconnect" (click)="disconnect()" md-button *ngIf="isConnected">
       <md-icon>bluetooth_disabled</md-icon>
     </button>
-    <a md-icon-button mdTooltip="Github" href="https://github.com/teradata/covalent" target="_blank">
+    <a md-icon-button mdTooltip="Github" href="https://github.com/mpicciolli/web-bluetooth-scanner" target="_blank">
       <md-icon svgIcon="assets:github"></md-icon>
     </a>
   </div>
@@ -17,10 +17,15 @@
     <md-card-subtitle>{{status}}</md-card-subtitle>
     <md-card-subtitle>ID : {{bluetoothDevice.id}}</md-card-subtitle>
     <md-divider></md-divider>
-    <app-service *ngFor='let service of services' [service]="service">
+    <div class="will-load">
+      <div
+        *tdLoading="'services.list'; type:'circular'; mode:'indeterminate'; strategy:'replace'; color:'primary'"></div>
+      <app-service *ngFor='let service of services' [service]="service">
 
-    </app-service>
+      </app-service>
+    </div>
   </md-card>
+
   <!--Error card-->
   <md-card *ngIf="!bluetoothIsEnabled">
     <md-card-title>Error</md-card-title>
@@ -29,4 +34,5 @@
       <p>{{errorMessage}}</p>
     </md-card-content>
   </md-card>
+
 </td-layout-nav>

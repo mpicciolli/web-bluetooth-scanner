@@ -1,12 +1,15 @@
-<td-expansion-panel label="serviceName">
+<td-expansion-panel label="{{serviceName}}">
   <template td-expansion-panel-label>
     <span *ngIf="service.isPrimary">{{serviceName}}</span>
   </template>
   <div class="md-padding">
-    <h3 class="md-subhead" *ngIf="service.isPrimary"><md-icon>star</md-icon> PRIMARY SERVICE</h3>
+    <h3 class="md-subhead" *ngIf="service.isPrimary">
+      <md-icon>star</md-icon>
+      PRIMARY SERVICE
+    </h3>
     <md-list>
       <template let-item let-last="last" ngFor [ngForOf]="characteristics">
-        <app-characteristic  [characteristic]="item">
+        <app-characteristic [characteristic]="item">
 
         </app-characteristic>
         <md-divider *ngIf="!last" md-inset></md-divider>

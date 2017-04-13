@@ -33,6 +33,7 @@ export class CharacteristicComponent implements OnInit {
   }
 
   read(): void {
+    //noinspection TypeScriptUnresolvedFunction
     this.characteristic.readValue().then(value => {
       this.characteristicValue = this._characteristicService.read(this.characteristic, value);
     });
@@ -45,6 +46,7 @@ export class CharacteristicComponent implements OnInit {
   notify() {
     if (this.isNotified) {
       // this.unNotify();
+      //noinspection TypeScriptUnresolvedFunction
       this.characteristic.stopNotifications()
         .then(_ => {
           console.log('> Notifications stopped: ' + this.characteristicName);
@@ -53,6 +55,7 @@ export class CharacteristicComponent implements OnInit {
         .catch(err => console.log(`Error :  ${err}`));
     }
     else {
+      //noinspection TypeScriptUnresolvedFunction
       this.characteristic.startNotifications().then(_ => {
         console.log('> Notifications started: ' + this.characteristicName);
         this.isNotified = true;
@@ -70,12 +73,8 @@ export class CharacteristicComponent implements OnInit {
     this.characteristicValue = this._characteristicService.read(this.characteristic, value);
   }
 
-  handleNotifications(event) {
-    let value = event.target.value;
-    console.log(value);
-  }
 
-  unNotify() {
+  private unNotify() {
     this.isNotified = false;
     this.notification.unsubscribe();
   }
